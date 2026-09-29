@@ -107,11 +107,21 @@ await trackAIUsage({
 Leest `envVarName` uit `process.env`; valt terug op `fallback` wanneer die
 ontbreekt of leeg is (alleen witruimte telt als leeg).
 
-### `aiClient(apiKeyEnvVar = "ANTHROPIC_API_KEY"): Anthropic | null`
+### `aiClient(apiKeyEnvVar = "ANTHROPIC_API_KEY", opties?: AiClientOpties): Anthropic | null`
 
 Geeft een gememoriseerde `Anthropic`-client terug, of `null` wanneer de
-sleutel ontbreekt. Bouwt een nieuwe client zodra de sleutel wijzigt — nooit
-een oude client die een verouderde sleutel vasthoudt.
+sleutel ontbreekt. Bouwt een nieuwe client zodra de sleutel of de opties
+wijzigen — nooit een oude client die een verouderde sleutel vasthoudt.
+
+**Timeout en retries (sinds 0.2.0, PLAT-207).** De client krijgt een
+expliciete `timeoutMs` (standaard `STANDAARD_TIMEOUT_MS`, vijf minuten) en
+`maxRetries` (standaard `STANDAARD_MAX_RETRIES`, twee). Voorheen gold de
+standaard van de SDK, tien minuten, en dat hield een verzoek — of een
+databankverbinding, als de aanroep in een transactie zit — tien minuten vast
+bij een hangende aanbieder. Kies zelf een kortere grens voor een interactieve
+aanroep: `aiClient("ANTHROPIC_API_KEY", { timeoutMs: 60_000 })`. Doe nooit een
+externe aanroep binnen een open databanktransactie. Een waarde die geen zin
+heeft (timeout ≤ 0, negatieve retries) gooit een fout.
 
 ### `vergeetAiClient(): void`
 

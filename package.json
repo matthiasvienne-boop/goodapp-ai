@@ -1,6 +1,6 @@
 {
   "name": "@goodapp/ai",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": false,
   "license": "MIT",
   "description": "One shared Anthropic client: a pinned SDK, per-use model constants, a fail-closed precondition guard, usage tracking, and prompt caching — for GoodApp products.",

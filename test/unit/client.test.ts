@@ -1,5 +1,5 @@
 import { describe, expect, it, afterEach, beforeEach } from "vitest";
-import { aiClient, vergeetAiClient, beoordeelAanroep } from "../../src/server/client";
+import { aiClient, vergeetAiClient, beoordeelAanroep, STANDAARD_TIMEOUT_MS, STANDAARD_MAX_RETRIES } from "../../src/server/client";
 
 const ENV_VAR = "GOODAPP_AI_TEST_KEY";
 
@@ -41,6 +41,51 @@ describe("aiClient", () => {
     vergeetAiClient();
     const tweede = aiClient(ENV_VAR);
     expect(eerste).not.toBe(tweede);
+  });
+});
+
+describe("aiClient: timeout en retries (PLAT-207)", () => {
+  beforeEach(() => vergeetAiClient());
+  afterEach(() => {
+    delete process.env[ENV_VAR];
+    vergeetAiClient();
+  });
+
+  it("geeft standaard een expliciete, eindige timeout en retrygrens", () => {
+    process.env[ENV_VAR] = "sk-test-1";
+    const client = aiClient(ENV_VAR);
+    expect(client?.timeout).toBe(STANDAARD_TIMEOUT_MS);
+    expect(client?.maxRetries).toBe(STANDAARD_MAX_RETRIES);
+    // De SDK-standaard is 10 minuten; een hangende provider mag een verzoek niet langer vasthouden dan dit.
+    expect(STANDAARD_TIMEOUT_MS).toBeLessThan(10 * 60 * 1000);
+  });
+
+  it("laat de aanroeper een kortere timeout en eigen retries kiezen", () => {
+    process.env[ENV_VAR] = "sk-test-1";
+    const client = aiClient(ENV_VAR, { timeoutMs: 20_000, maxRetries: 0 });
+    expect(client?.timeout).toBe(20_000);
+    expect(client?.maxRetries).toBe(0);
+  });
+
+  it("geeft dezelfde client bij dezelfde opties en een andere bij andere opties", () => {
+    process.env[ENV_VAR] = "sk-test-1";
+    const a = aiClient(ENV_VAR, { timeoutMs: 20_000 });
+    const b = aiClient(ENV_VAR, { timeoutMs: 20_000 });
+    const c = aiClient(ENV_VAR, { timeoutMs: 40_000 });
+    expect(a).toBe(b);
+    expect(a).not.toBe(c);
+    expect(c?.timeout).toBe(40_000);
+  });
+
+  it("weigert een timeout of retrygrens die geen zin heeft", () => {
+    process.env[ENV_VAR] = "sk-test-1";
+    expect(() => aiClient(ENV_VAR, { timeoutMs: 0 })).toThrow(/timeoutMs/);
+    expect(() => aiClient(ENV_VAR, { timeoutMs: -5 })).toThrow(/timeoutMs/);
+    expect(() => aiClient(ENV_VAR, { maxRetries: -1 })).toThrow(/maxRetries/);
+  });
+
+  it("zonder sleutel blijft het null, ook met opties", () => {
+    expect(aiClient(ENV_VAR, { timeoutMs: 20_000 })).toBeNull();
   });
 });
 
