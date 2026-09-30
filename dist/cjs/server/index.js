@@ -1,12 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.metPromptCache = exports.STANDAARD_PRIJSTABEL = exports.schatKosten = exports.beoordeelAanroep = exports.vergeetAiClient = exports.aiClient = exports.modelConstant = void 0;
+exports.metPromptCache = exports.STANDAARD_PRIJSTABEL = exports.schatKosten = exports.STANDAARD_MAX_RETRIES = exports.STANDAARD_TIMEOUT_MS = exports.beoordeelAanroep = exports.vergeetAiClient = exports.aiClient = exports.modelConstant = void 0;
 var model_js_1 = require("./model.js");
 Object.defineProperty(exports, "modelConstant", { enumerable: true, get: function () { return model_js_1.modelConstant; } });
 var client_js_1 = require("./client.js");
 Object.defineProperty(exports, "aiClient", { enumerable: true, get: function () { return client_js_1.aiClient; } });
 Object.defineProperty(exports, "vergeetAiClient", { enumerable: true, get: function () { return client_js_1.vergeetAiClient; } });
 Object.defineProperty(exports, "beoordeelAanroep", { enumerable: true, get: function () { return client_js_1.beoordeelAanroep; } });
+Object.defineProperty(exports, "STANDAARD_TIMEOUT_MS", { enumerable: true, get: function () { return client_js_1.STANDAARD_TIMEOUT_MS; } });
+Object.defineProperty(exports, "STANDAARD_MAX_RETRIES", { enumerable: true, get: function () { return client_js_1.STANDAARD_MAX_RETRIES; } });
 var usage_js_1 = require("./usage.js");
 Object.defineProperty(exports, "schatKosten", { enumerable: true, get: function () { return usage_js_1.schatKosten; } });
 Object.defineProperty(exports, "STANDAARD_PRIJSTABEL", { enumerable: true, get: function () { return usage_js_1.STANDAARD_PRIJSTABEL; } });
